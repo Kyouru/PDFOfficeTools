@@ -31,21 +31,40 @@ namespace BasicStyle.SubMenu
 
         private void btnProcesar_Click(object sender, EventArgs e)
         {
-            string resultadoLog = "";
+            // Directorio de logs
+            string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+            Directory.CreateDirectory(logDirectory); // Crea la carpeta si no existe
+
+            // Generar nombre del archivo con la fecha de hoy
+            string logFileName = $"log_{DateTime.Now:yyyy-MM-dd}.txt";
+            string logPath = Path.Combine(logDirectory, logFileName);
+
+            StringBuilder resultadoLog = new StringBuilder();
             int cont = 1;
             if (tbListaEml.Text != "")
             {
                 inputPath.Text = inputFolder.SelectedPath;
                 // Verificar si la carpeta seleccionada no está vacía
-                if (System.IO.Directory.GetFiles(inputPath.Text, "*.eml").Length > 0)
+                if (Directory.GetFiles(inputPath.Text, "*.eml").Length > 0)
                 {
                     // Procesar los archivos EML en la carpeta seleccionada
                     try
                     {
                         string[] filePaths = tbListaEml.Lines;
+                        int totalArchivos = filePaths.Length;
+                        // Configurar la barra de progreso
+                        progressBar.Minimum = 0;
+                        progressBar.Maximum = totalArchivos - 1;
+                        progressBar.Value = 0;
+                        progressBar.Visible = true;
                         foreach (string filePath in filePaths)
                         {
                             btnProcesar.Text = "Procesando " + cont + "/" + (tbListaEml.Lines.Length - 1);
+                            if (cont <= progressBar.Maximum)
+                            {
+                                progressBar.Value = cont;
+                                Application.DoEvents(); // Permite actualizar la UI en tiempo real
+                            }
                             if (!string.IsNullOrWhiteSpace(filePath))
                             {
                                 string trimmedPath = filePath.Trim();
@@ -55,13 +74,17 @@ namespace BasicStyle.SubMenu
                                 {
                                     convertirEMLaPDF(trimmedPath);
                                 }
-                                resultadoLog += $"{trimmedPath}: {(exists ? "Procesado" : "No existe")}" + Environment.NewLine;
-                                
+                                resultadoLog.AppendLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {Path.GetFileName(trimmedPath)}: {(exists ? "Procesado" : "No existe")}");
+                                // Actualizar barra de progreso
+
                             }
                             cont++;
                         }
+                        // Guardar el log en el archivo
+                        File.AppendAllText(logPath, resultadoLog.ToString() + Environment.NewLine);
                         btnProcesar.Text = "Procesar";
-                        MessageBox.Show(resultadoLog);
+                        progressBar.Visible = false;
+                        MessageBox.Show("Proceso completado. Log guardado en:\n" + logPath);
                     }
                     catch (Exception ex)
                     {
@@ -115,13 +138,14 @@ namespace BasicStyle.SubMenu
             // Agregar la cabecera con información
             htmlBuilder.AppendLine("<html><head>");
             htmlBuilder.AppendLine("<style>");
-            htmlBuilder.AppendLine("body { font-family: 'Aptos', sans-serif; }");
-            htmlBuilder.AppendLine("strong { font-family: 'Aptos', sans-serif; }");
+            htmlBuilder.AppendLine("div { margin-left: 20px; font-family: 'Aptos', sans-serif; }");
             htmlBuilder.AppendLine("</style></head><body>");
-            htmlBuilder.AppendLine($"<strong>De:</strong> {message.From}<br>");
+            htmlBuilder.AppendLine("<div>"); // Contenedor con margen
+            htmlBuilder.AppendLine($"<br><strong>De:</strong> {message.From}<br>");
             htmlBuilder.AppendLine($"<strong>Enviado el:</strong> {message.Date.ToString("dddd, dd 'de' MMMM 'de' yyyy HH:mm", new CultureInfo("es-ES"))}<br>");
             htmlBuilder.AppendLine($"<strong>Para:</strong> {message.To}<br>");
             htmlBuilder.AppendLine($"<strong>Asunto:</strong> {message.Subject}<br><hr><br>");
+            htmlBuilder.AppendLine("</div>");
             htmlBuilder.AppendLine("</body></html>");
 
             // Obtener contenido del cuerpo del mensaje

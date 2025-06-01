@@ -1,5 +1,6 @@
 ﻿
 using PdfSharp.Pdf.IO;
+using System.Text;
 
 namespace BasicStyle.SubMenu
 {
@@ -18,17 +19,17 @@ namespace BasicStyle.SubMenu
         private void btnProcesar_Click(object sender, EventArgs e)
         {
             PDFOfficeTools.SubMenu.QuitarPw.Password pwForm = new PDFOfficeTools.SubMenu.QuitarPw.Password();
-            /*
-            pwForm.StartPosition = FormStartPosition.Manual;
-            pwForm.Location = new System.Drawing.Point(
-                this.Location.X + (this.Width - pwForm.Width) / 2,
-                this.Location.Y + (this.Height - pwForm.Height) / 2
-            );
-            */
             pwForm.ShowDialog();
             if (pwForm.ValorRetorno != "")
             {
-                string resultadoLog = "";
+                // Directorio de logs
+                string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+                Directory.CreateDirectory(logDirectory); // Crea la carpeta si no existe
+
+                // Generar nombre del archivo con la fecha de hoy
+                string logFileName = $"log_{DateTime.Now:yyyy-MM-dd}.txt";
+                string logPath = Path.Combine(logDirectory, logFileName);
+                StringBuilder resultadoLog = new StringBuilder();
                 int cont = 1;
                 if (tbListaEml.Text != "")
                 {
@@ -52,12 +53,14 @@ namespace BasicStyle.SubMenu
                                     {
                                         quitarPasswordPDF(trimmedPath, pwForm.ValorRetorno);
                                     }
-                                    resultadoLog += $"{Path.GetFileName(trimmedPath)}: {(exists ? "Procesado" : "No existe")}" + Environment.NewLine;
+                                    resultadoLog.AppendLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - {Path.GetFileName(trimmedPath)}: {(exists ? "Procesado" : "No existe")}");
                                 }
                                 cont++;
                             }
+                            // Guardar el log en el archivo con la fecha actual
+                            File.WriteAllText(logPath, resultadoLog.ToString());
                             btnProcesar.Text = "Procesar";
-                            MessageBox.Show(resultadoLog);
+                            MessageBox.Show($"Proceso completado. Log guardado en:\n{logPath}");
                         }
                         catch (Exception ex)
                         {

@@ -8,6 +8,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageIcon>GO_Gift.png</PackageIcon>
     <ApplicationIcon>GO_Gift.ico</ApplicationIcon>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

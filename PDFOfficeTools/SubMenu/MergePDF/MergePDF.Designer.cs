@@ -85,11 +85,11 @@
             // tbListaEml
             // 
             tbListaEml.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tbListaEml.Enabled = false;
             tbListaEml.Font = new Font("Century Gothic", 9F);
             tbListaEml.Location = new Point(33, 68);
             tbListaEml.Multiline = true;
             tbListaEml.Name = "tbListaEml";
+            tbListaEml.ReadOnly = true;
             tbListaEml.ScrollBars = ScrollBars.Both;
             tbListaEml.Size = new Size(724, 345);
             tbListaEml.TabIndex = 4;

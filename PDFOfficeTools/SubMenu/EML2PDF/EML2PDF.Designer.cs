@@ -34,6 +34,7 @@
             btnInputFolder = new Button();
             btnProcesar = new Button();
             tbListaEml = new TextBox();
+            progressBar = new ProgressBar();
             SuspendLayout();
             // 
             // inputFolder
@@ -85,21 +86,31 @@
             // tbListaEml
             // 
             tbListaEml.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tbListaEml.Enabled = false;
             tbListaEml.Font = new Font("Century Gothic", 9F);
             tbListaEml.Location = new Point(33, 68);
             tbListaEml.Multiline = true;
             tbListaEml.Name = "tbListaEml";
+            tbListaEml.ReadOnly = true;
             tbListaEml.ScrollBars = ScrollBars.Both;
             tbListaEml.Size = new Size(724, 345);
             tbListaEml.TabIndex = 4;
             tbListaEml.WordWrap = false;
+            // 
+            // progressBar
+            // 
+            progressBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            progressBar.Location = new Point(33, 419);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(724, 29);
+            progressBar.TabIndex = 5;
+            progressBar.Visible = false;
             // 
             // EML2PDF
             // 
             AutoScaleMode = AutoScaleMode.None;
             BackColor = Color.MidnightBlue;
             ClientSize = new Size(800, 450);
+            Controls.Add(progressBar);
             Controls.Add(tbListaEml);
             Controls.Add(btnProcesar);
             Controls.Add(btnInputFolder);
@@ -121,5 +132,6 @@
         private Button btnInputFolder;
         private Button btnProcesar;
         private TextBox tbListaEml;
+        private ProgressBar progressBar;
     }
 }
